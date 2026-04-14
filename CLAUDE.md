@@ -12,7 +12,7 @@ Read it every session before doing anything.
 ## MCP servers
 - scraper_server.py  → fetch_job(url)
 - outreach_server.py → find_recruiter(), draft_outreach()
-- pdf_server.py      → generate_resume_pdf(company, role, skills_json, projects_json, experience_json)
+- pdf_server.py      → generate_resume_pdf(company, role, tailored_json_path)
 
 ## PDF generation
 Call the generate_resume_pdf() MCP tool from servers/pdf_server.py.
@@ -49,7 +49,17 @@ Before writing anything, list:
 This becomes the foundation for Step 4.
 
 ### Step 4 — Tailor the resume
-Rewrite context/resume.md for this specific job:
+Rewrite context/resume.md for this specific job and write the result to:
+  output/[Company]_[Role]_tailored.json
+
+Use this schema:
+  {
+    "skills":     { "Category": "skill1, skill2, ..." },
+    "projects":   [{ "name": "...", "stack": "...", "bullets": ["..."] }],
+    "experience": [{ "title": "...", "company": "...", "dates": "...", "bullets": ["..."] }]
+  }
+
+The user can edit this file to tweak bullets or reorder skills before Step 6.
 
 BULLETS — every bullet must:
   - Start with a strong past-tense action verb
@@ -86,10 +96,10 @@ NEVER use:
   "Thank you for your consideration"
 
 ### Step 6 — Generate PDFs
-Call generate_resume_pdf(company, role, skills_json, projects_json, experience_json)
+Call generate_resume_pdf(company, role, tailored_json_path)
 from the pdf_server MCP tool.
 
-Pass the tailored skills, projects, and experience as JSON arguments.
+tailored_json_path is the absolute path to the file written in Step 4.
 The tool returns the PDF path — print it.
 
 Cover letter: save as output/[Company]_[Role]_coverletter_[YYYY-MM-DD].txt

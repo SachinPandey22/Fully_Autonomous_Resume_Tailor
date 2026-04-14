@@ -11,6 +11,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.platypus import (
     HRFlowable,
+    KeepInFrame,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -62,21 +63,21 @@ def _s(name, **kw) -> ParagraphStyle:
 
 
 NAME_S = _s("Name", fontName="Helvetica-Bold", fontSize=17,
-            textColor=DARK, alignment=TA_CENTER, spaceBefore=6, spaceAfter=4)
+            textColor=DARK, alignment=TA_CENTER, spaceBefore=4, spaceAfter=8)
 CONTACT_S = _s("Contact", fontName="Helvetica", fontSize=8.5,
-               textColor=LIGHT, alignment=TA_CENTER, spaceAfter=4)
+               textColor=LIGHT, alignment=TA_CENTER, spaceAfter=3)
 SECTION_S = _s("Section", fontName="Helvetica-Bold", fontSize=10,
-               textColor=ACCENT, spaceBefore=8, spaceAfter=3)
+               textColor=DARK, spaceBefore=6, spaceAfter=2)
 ENTRY_TITLE_S = _s("EntryTitle", fontName="Helvetica-Bold", fontSize=9.5,
-                   textColor=DARK, spaceBefore=5, spaceAfter=1)
+                   textColor=DARK, spaceBefore=3, spaceAfter=1)
 ENTRY_TITLE_R = _s("EntryTitleR", fontName="Helvetica", fontSize=9,
-                   textColor=LIGHT, alignment=TA_RIGHT)
+                   textColor=MID, alignment=TA_RIGHT)
 ENTRY_SUB_S = _s("EntrySub", fontName="Helvetica-Oblique", fontSize=8.5,
-                 textColor=LIGHT, spaceAfter=2)
+                 textColor=MID, spaceAfter=1)
 BULLET_S = _s("Bullet", fontName="Helvetica", fontSize=8.8,
-              textColor=MID, leftIndent=10, spaceAfter=1, leading=12)
+              textColor=MID, leftIndent=10, spaceAfter=0.5, leading=11)
 SKILL_S = _s("Skill", fontName="Helvetica", fontSize=8.8,
-             textColor=MID, spaceAfter=1.5, leading=12)
+             textColor=MID, spaceAfter=1, leading=11)
 AFF_S = _s("Aff", fontName="Helvetica", fontSize=8.8,
            textColor=MID, spaceAfter=1)
 
@@ -89,7 +90,7 @@ DIVIDER_STYLE = TableStyle([
 ])
 
 
-def _hr(after=4):
+def _hr(after=3):
     return HRFlowable(width="100%", thickness=0.4,
                       color=colors.HexColor("#cccccc"), spaceAfter=after)
 
@@ -110,8 +111,8 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
         pagesize=letter,
         leftMargin=0.6 * inch,
         rightMargin=0.6 * inch,
-        topMargin=0.6 * inch,
-        bottomMargin=0.5 * inch,
+        topMargin=0.5 * inch,
+        bottomMargin=0.45 * inch,
     )
 
     story = []
@@ -124,10 +125,10 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
     )
     story.append(Paragraph(contact_line, CONTACT_S))
     story.append(HRFlowable(width="100%", thickness=1.2,
-                             color=ACCENT, spaceAfter=6))
+                             color=DARK, spaceAfter=6))
 
     # ── Education ─────────────────────────────────────────────────────────────
-    story.append(Paragraph("EDUCATION", SECTION_S))
+    story.append(Paragraph("<u>EDUCATION</u>", SECTION_S))
     story.append(_hr())
     story.append(_two_col(
         f'<b>{EDUCATION["school"]}</b>',
@@ -138,22 +139,22 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
     story.append(Paragraph(
         f'GPA: {EDUCATION["gpa"]}  |  {EDUCATION["graduation"]}',
         _s("EGPA", fontName="Helvetica", fontSize=8.5,
-           textColor=LIGHT, spaceAfter=1),
+           textColor=MID, spaceAfter=1),
     ))
     story.append(Paragraph(
         f'<i>Relevant Courses:</i> {EDUCATION["courses"]}',
-        _s("ECrs", fontName="Helvetica-Oblique", fontSize=8.2,
-           textColor=LIGHT, spaceAfter=2),
+        _s("ECrs", fontName="Helvetica", fontSize=8.5,
+           textColor=MID, spaceAfter=2),
     ))
 
     # ── Skills ────────────────────────────────────────────────────────────────
-    story.append(Paragraph("SKILLS", SECTION_S))
+    story.append(Paragraph("<u>SKILLS</u>", SECTION_S))
     story.append(_hr())
     for category, value in skills.items():
         story.append(Paragraph(f"<b>{category}:</b> {value}", SKILL_S))
 
     # ── Projects ──────────────────────────────────────────────────────────────
-    story.append(Paragraph("PROJECTS", SECTION_S))
+    story.append(Paragraph("<u>PROJECTS</u>", SECTION_S))
     story.append(_hr())
     for proj in projects:
         story.append(Paragraph(f'<b>{proj["name"]}</b>', ENTRY_TITLE_S))
@@ -164,7 +165,7 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
             story.append(Paragraph(f"\u2022 {bullet}", BULLET_S))
 
     # ── Experience ────────────────────────────────────────────────────────────
-    story.append(Paragraph("EXPERIENCE", SECTION_S))
+    story.append(Paragraph("<u>EXPERIENCE</u>", SECTION_S))
     story.append(_hr())
     for exp in experience:
         story.append(_two_col(
@@ -177,12 +178,15 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
             story.append(Paragraph(f"\u2022 {bullet}", BULLET_S))
 
     # ── Affiliations ──────────────────────────────────────────────────────────
-    story.append(Paragraph("AFFILIATIONS", SECTION_S))
+    story.append(Paragraph("<u>AFFILIATIONS</u>", SECTION_S))
     story.append(_hr())
     for aff in AFFILIATIONS:
         story.append(Paragraph(aff, AFF_S))
 
-    doc.build(story)
+    page_w, page_h = letter
+    frame_w = page_w - 0.6 * inch - 0.6 * inch
+    frame_h = page_h - 0.5 * inch - 0.45 * inch
+    doc.build([KeepInFrame(frame_w, frame_h, story, mode="shrink")])
 
 
 # ── MCP Tool ──────────────────────────────────────────────────────────────────
@@ -190,61 +194,46 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
 def generate_resume_pdf(
     company: str,
     role: str,
-    skills_json: str,
-    projects_json: str,
-    experience_json: str,
+    tailored_json_path: str,
 ) -> str:
     """
     Generate a tailored, styled PDF resume for a specific job application.
-    Returns the absolute path to the PDF so open_and_prefill() can use it.
+    Returns the absolute path to the PDF.
 
-    skills_json — JSON object: category → comma-separated skills string.
-      Ordered top-to-bottom as you want them to appear.
-      Example:
-        {
-          "Languages": "Python, Java, JavaScript, TypeScript, C++",
-          "AI & Automation": "RAG, Generative AI, LLM APIs, Qdrant, MCP Servers",
-          "Cloud & Deployment": "AWS EC2, Firebase, Vercel, Render",
-          "Backend": "FastAPI, Django REST Framework, Node.js, Express",
-          "Frontend": "React, Recharts, HTML, CSS",
-          "Databases": "PostgreSQL, MongoDB",
-          "Tools & Practices": "Git, Agile/Scrum, Jira, RESTful APIs, Pytest, JWT"
-        }
-
-    projects_json — JSON array of project objects.
-      Each object: { "name": str, "stack": str, "bullets": [str, ...] }
-      Example:
-        [
+    tailored_json_path — absolute path to a JSON file with this schema:
+      {
+        "skills": {
+          "Languages": "Python, Java, JavaScript",
+          "Backend": "FastAPI, Node.js, Express",
+          ...
+        },
+        "projects": [
           {
-            "name": "RAG-Based AI Assistant",
-            "stack": "Python · FastAPI · Qdrant · Gemini API",
-            "bullets": [
-              "Built a Retrieval-Augmented Generation assistant integrating Generative AI...",
-              "Developed FastAPI microservices for document ingestion and query handling..."
-            ]
+            "name": "Project Name",
+            "stack": "React · Node.js · PostgreSQL",
+            "bullets": ["bullet 1", "bullet 2"]
+          }
+        ],
+        "experience": [
+          {
+            "title": "Job Title",
+            "company": "Company Name",
+            "dates": "Jan 2024 – Present",
+            "bullets": ["bullet 1"]
           }
         ]
+      }
 
-    experience_json — JSON array of experience objects.
-      Each object: { "title": str, "company": str, "dates": str, "bullets": [str, ...] }
-      Example:
-        [
-          {
-            "title": "Undergraduate Research Assistant",
-            "company": "Texas State University",
-            "dates": "Jul 2024 – Present",
-            "bullets": [
-              "Developed Python automation pipelines to process IMU/EMG sensor datasets..."
-            ]
-          }
-        ]
+    Write this file (output/[Company]_[Role]_tailored.json) before calling this tool.
+    The user can edit it to tweak bullets or reorder skills before PDF generation.
     """
     try:
-        skills = json.loads(skills_json)
-        projects = json.loads(projects_json)
-        experience = json.loads(experience_json)
-    except json.JSONDecodeError as e:
-        return json.dumps({"error": f"Invalid JSON: {e}"})
+        data = json.loads(Path(tailored_json_path).read_text())
+        skills = data["skills"]
+        projects = data["projects"]
+        experience = data["experience"]
+    except (OSError, json.JSONDecodeError, KeyError) as e:
+        return json.dumps({"error": f"Failed to read tailored JSON: {e}"})
 
     OUTPUT_DIR.mkdir(exist_ok=True)
     today = date.today().isoformat()

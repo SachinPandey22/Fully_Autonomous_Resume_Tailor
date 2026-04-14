@@ -1,79 +1,97 @@
+import json
 from urllib.parse import quote_plus
+
+from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
+
+load_dotenv()
 
 mcp = FastMCP("outreach")
 
+SACHIN = {
+    "name": "Sachin Pandey",
+    "email": "ihn10@txstate.edu",
+    "linkedin": "linkedin.com/in/pandey-s/",
+}
+
 
 @mcp.tool()
-def find_recruiter(company: str, role: str) -> dict:
-    """Build LinkedIn search URLs to find a recruiter, hiring manager, or team member."""
+def find_recruiter(company: str, role: str) -> str:
+    """
+    Build LinkedIn search URLs to find recruiters and employees at a company.
+    Does not scrape LinkedIn — returns search URLs for manual use.
+    """
+    company_enc = quote_plus(company)
+    role_enc = quote_plus(role)
+
     recruiter_url = (
-        "https://www.linkedin.com/search/results/people/?keywords="
-        + quote_plus(f"{company} recruiter OR talent acquisition")
+        f"https://www.linkedin.com/search/results/people/"
+        f"?keywords={company_enc}+recruiter+OR+talent+acquisition"
     )
-    manager_url = (
-        "https://www.linkedin.com/search/results/people/?keywords="
-        + quote_plus(f"{company} {role} manager OR director OR lead")
-    )
-    engineer_url = (
-        "https://www.linkedin.com/search/results/people/?keywords="
-        + quote_plus(f"{company} {role} engineer")
+    employee_url = (
+        f"https://www.linkedin.com/search/results/people/"
+        f"?keywords={company_enc}+{role_enc}"
     )
 
-    return {
-        "urls": [
-            {
-                "label": "1. Recruiter / Talent Acquisition (open this first)",
-                "url": recruiter_url,
-            },
-            {
-                "label": "2. Hiring Manager",
-                "url": manager_url,
-            },
-            {
-                "label": "3. Team Member",
-                "url": engineer_url,
-            },
-        ],
-        "note": (
-            "Open URL #1 first — finding a recruiter or TA person gives you the "
-            "fastest path to the hiring team. If no recruiter is visible, try #2."
-        ),
-    }
+    note = (
+        f"Open these URLs in your browser (must be logged into LinkedIn):\n"
+        f"1. Recruiters at {company}: {recruiter_url}\n"
+        f"2. {role} employees at {company}: {employee_url}\n\n"
+        f"Find a recruiter or hiring manager, get their name, then call draft_outreach()."
+    )
+    return note
 
 
 @mcp.tool()
 def draft_outreach(
     recruiter_name: str,
     company: str,
-    role: str,
+    role_applying: str,
     my_background: str,
-) -> dict:
-    """Draft a cold outreach email to a recruiter. Keep it under 150 words."""
-    subject = f"{role} at {company} — quick intro"
+    company_reason: str = "",
+) -> str:
+    """
+    Generate a cold outreach email to a recruiter and return structured JSON
+    ready to pipe into gmail_create_draft.
 
-    body = f"""Hi {recruiter_name},
+    recruiter_name: first name (or full name) of the recruiter.
+    company: target company name.
+    role_applying: job title you are applying for.
+    my_background: 1-2 sentence summary (e.g. 'CS junior at Texas State, 4.0 GPA,
+                   built full-stack apps and a RAG AI assistant').
+    company_reason: why this company specifically (optional — if omitted a placeholder
+                    is left so you can fill it in Gmail before sending).
 
-I'm a CS student at Texas State University (4.0 GPA, May 2027) with hands-on experience building full-stack web apps and AI systems. I came across the {role} role at {company} and was drawn in because [COMPANY_REASON].
+    Returns JSON: { subject, body, to, word_count }
+    Pass subject + body directly to gmail_create_draft.
+    """
+    reason = company_reason if company_reason else f"[FILL IN: why {company} specifically]"
 
-Most relevant to this role: I built a RAG-based AI assistant using FastAPI and Qdrant, and a full-stack fitness tracker with React, Node.js, and PostgreSQL — shipping both end-to-end. I also do Python data analysis as a Research Assistant, which maps directly to {company}'s backend-heavy environment.
+    subject = f"{role_applying} at {company} — quick introduction"
 
-Happy to share more or connect briefly — no pressure either way.
-
-Sachin Pandey
-pandeys2023@gmail.com
-linkedin.com/in/pandey-s/
-github.com/[github]"""
+    body = (
+        f"Hi {recruiter_name},\n\n"
+        f"{my_background} "
+        f"I'm currently seeking a {role_applying} opportunity and {company} stood out to me.\n\n"
+        f"I'm particularly drawn to {company} because {reason}. "
+        f"I believe my background aligns well with what your team is building.\n\n"
+        f"Would you be open to a 15-minute call? "
+        f"No pressure — happy to connect asynchronously too.\n\n"
+        f"Thank you for your time.\n\n"
+        f"Best,\n"
+        f"{SACHIN['name']}\n"
+        f"{SACHIN['email']} | {SACHIN['linkedin']}"
+    )
 
     word_count = len(body.split())
-
-    return {
+    return json.dumps({
         "subject": subject,
         "body": body,
+        "to": "",
         "word_count": word_count,
-        "note": "Replace [COMPANY_REASON] with a specific reason you want to work there.",
-    }
+        "note": "Pass subject + body to gmail_create_draft. Fill in recruiter email in 'to'. Fill in [FILL IN] if present.",
+    }, indent=2)
 
 
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(transport="stdio")

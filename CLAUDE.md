@@ -12,10 +12,10 @@ Read it every session before doing anything.
 ## MCP servers
 - scraper_server.py  → fetch_job(url)
 - outreach_server.py → find_recruiter(), draft_outreach()
+- pdf_server.py      → generate_resume_pdf(company, role, skills_json, projects_json, experience_json)
 
 ## PDF generation
-Run: python scripts/generate_pdf.py
-Claude Code calls this script directly after tailoring.
+Call the generate_resume_pdf() MCP tool from servers/pdf_server.py.
 
 ---
 
@@ -86,11 +86,14 @@ NEVER use:
   "Thank you for your consideration"
 
 ### Step 6 — Generate PDFs
-Run: python scripts/generate_pdf.py
+Call generate_resume_pdf(company, role, skills_json, projects_json, experience_json)
+from the pdf_server MCP tool.
 
-Generate two files in output/:
-  output/[Company]_[Role]_resume_[YYYY-MM-DD].pdf
-  output/[Company]_[Role]_coverletter_[YYYY-MM-DD].pdf
+Pass the tailored skills, projects, and experience as JSON arguments.
+The tool returns the PDF path — print it.
+
+Cover letter: save as output/[Company]_[Role]_coverletter_[YYYY-MM-DD].txt
+(plain text is fine for cover letters — only the resume needs PDF).
 
 Print both file paths when done.
 

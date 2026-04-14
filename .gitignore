@@ -6,3 +6,5 @@ __pycache__/
 venv/
 *.db
 prompt.md
+.DS_Store
+.claude/

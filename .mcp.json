@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "scraper": {
+      "command": "/Users/sachinpandey/Desktop/All_Projects/resume-tailor/venv/bin/python3",
+      "args": ["/Users/sachinpandey/Desktop/All_Projects/resume-tailor/servers/scraper_server.py"]
+    },
+    "outreach": {
+      "command": "/Users/sachinpandey/Desktop/All_Projects/resume-tailor/venv/bin/python3",
+      "args": ["/Users/sachinpandey/Desktop/All_Projects/resume-tailor/servers/outreach_server.py"]
+    },
+    "pdf": {
+      "command": "/Users/sachinpandey/Desktop/All_Projects/resume-tailor/venv/bin/python3",
+      "args": ["/Users/sachinpandey/Desktop/All_Projects/resume-tailor/servers/pdf_server.py"]
+    }
+  }
+}

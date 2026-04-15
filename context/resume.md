@@ -1,6 +1,6 @@
 # Sachin Pandey
 
-pandeys2023@gmail.com | +1-737-213-2760 | San Marcos, TX
+pandeys2023@gmail.com | +1-737-213-2760 | Austin, TX
 linkedin.com/in/pandey-s/ | github.com/sachinpandey22
 
 ## Education
@@ -53,6 +53,21 @@ Python • FastAPI • Qdrant • Gemini API
 - Developed backend APIs using FastAPI for document ingestion, processing, and query handling
 - Integrated Qdrant vector database to enable semantic search and contextual information retrieval
 - Deployed the application using Vercel and Firebase for web access and demonstration
+
+### Fully Autonomous Resume Tailor
+Python • Claude Code • Automation
+- Developed an end-to-end autonomous pipeline that fetches job descriptions via URL and generates optimized, ATS-friendly PDF resumes and cover letters.
+- Implemented a 7-step workflow including automated keyword extraction, fit scoring (1–10), and content tailoring to maximize role relevancy.
+- Automated recruiter outreach by drafting personalized messaging based on specific company and role data.
+- Integrated Claude Code and Anthropic APIs to handle complex text analysis and dynamic document generation.
+
+### Gmail MCP Local Server
+Python • Model Context Protocol (MCP) • Google Cloud API
+- Architected a local Model Context Protocol (MCP) server to extend LLM capabilities, enabling secure, programmatic interaction with the Gmail API.
+- Developed a suite of automation tools allowing AI agents to search, read, draft, and send emails using OAuth 2.0 authentication.
+- Engineered a secure token management system with automatic refresh cycles and environment-based credential handling to ensure data privacy.
+- Streamlined AI-driven communication workflows by bridging the gap between local LLM environments and real-world messaging services via stdin/stdout communication protocols.
+
 
 ## Affiliations
 CodePath | Community Member & Student | February 2025 – Present

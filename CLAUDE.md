@@ -50,7 +50,7 @@ This becomes the foundation for Step 4.
 
 ### Step 4 — Tailor the resume
 Rewrite context/resume.md for this specific job and write the result to:
-  output/[Company]_[Role]_tailored.json
+  output/json/[Company]_[Role]_tailored.json
 
 Use this schema:
   {
@@ -60,6 +60,7 @@ Use this schema:
   }
 
 The user can edit this file to tweak bullets or reorder skills before Step 6.
+The output/json/ directory is created automatically if it doesn't exist.
 
 BULLETS — every bullet must:
   - Start with a strong past-tense action verb
@@ -70,7 +71,8 @@ BULLETS — every bullet must:
 
 SKILLS — reorder so their stack appears first
 
-PROJECTS — lead with most relevant project for this job
+PROJECTS — include exactly 2 most relevant projects for this job.
+  Do NOT include more — this keeps the PDF at a readable size.
 
 EDUCATION — keep as-is, add relevant coursework only if
   it directly maps to a requirement
@@ -99,13 +101,17 @@ NEVER use:
 Call generate_resume_pdf(company, role, tailored_json_path)
 from the pdf_server MCP tool.
 
-tailored_json_path is the absolute path to the file written in Step 4.
+tailored_json_path is the absolute path to the file written in Step 4 (output/json/...).
 The tool returns the PDF path — print it.
 
-Cover letter: save as output/[Company]_[Role]_coverletter_[YYYY-MM-DD].txt
-(plain text is fine for cover letters — only the resume needs PDF).
+Cover letter:
+Call generate_coverletter_pdf(company, role, cover_letter_text)
+from the pdf_server MCP tool.
+Pass the full cover letter body as cover_letter_text (paragraphs separated by double newlines).
+The tool returns the PDF path — print it.
+Do NOT save a .txt file — the MCP tool is the only step needed.
 
-Print both file paths when done.
+Print both PDF paths when done.
 
 ### Step 7 — Recruiter outreach
 Call find_recruiter(company, role)
@@ -134,13 +140,13 @@ Print exactly this when workflow is complete:
   DONE — [Job Title] @ [Company]
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Fit score:    X/10
-  Resume PDF:   output/[filename].pdf
-  Cover letter: output/[filename].pdf
+  Resume PDF:   output/pdf/[filename].pdf
+  Cover letter: output/pdf/[filename].pdf
 
   To apply:
   1. Open [url] in Chrome
   2. Simplify auto-fills the form
-  3. Upload resume PDF from output/
+  3. Upload resume PDF from output/pdf/
   4. Paste cover letter for free-text fields
   5. Submit
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

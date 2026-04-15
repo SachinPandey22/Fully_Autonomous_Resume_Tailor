@@ -23,15 +23,16 @@ load_dotenv()
 
 mcp = FastMCP("resume-pdf")
 
-OUTPUT_DIR = Path(__file__).parent.parent / "output"
+OUTPUT_DIR = Path(__file__).parent.parent / "output" / "pdf"
 
 # Fixed contact / education — only the tailored sections change per job
 CONTACT = {
     "name": "Sachin Pandey",
     "location": "San Marcos, TX",
     "phone": "+1-737-213-2760",
-    "email": "ihn10@txstate.edu",
+    "email": "pandeys2023@gmail.com",
     "linkedin": "linkedin.com/in/pandey-s/",
+    "github": "github.com/sachinpandey22",
 }
 
 EDUCATION = {
@@ -96,7 +97,7 @@ def _hr(after=3):
                       color=colors.HexColor("#cccccc"), spaceAfter=after)
 
 
-def _two_col(left_text, right_text, left_style, right_style, widths=("78%", "22%")):
+def _two_col(left_text, right_text, left_style, right_style, widths=(5.694 * inch, 1.606 * inch)):
     t = Table(
         [[Paragraph(left_text, left_style), Paragraph(right_text, right_style)]],
         colWidths=widths,
@@ -122,7 +123,7 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
     story.append(Paragraph(CONTACT["name"], NAME_S))
     contact_line = (
         f'{CONTACT["location"]}  |  {CONTACT["phone"]}  |  {CONTACT["email"]}'
-        f'  |  {CONTACT["linkedin"]}'
+        f'  |  {CONTACT["linkedin"]}  |  {CONTACT["github"]}'
     )
     story.append(Paragraph(contact_line, CONTACT_S))
     story.append(HRFlowable(width="100%", thickness=1.2,
@@ -252,6 +253,103 @@ def generate_resume_pdf(
         "pdf_path": str(pdf_path),
         "filename": filename,
         "message": f"Tailored resume PDF saved → {filename}",
+    })
+
+
+# ── Cover Letter PDF builder ──────────────────────────────────────────────────
+def _build_coverletter_pdf(path: str, company: str, role: str, body: str) -> None:
+    doc = SimpleDocTemplate(
+        path,
+        pagesize=letter,
+        leftMargin=1.0 * inch,
+        rightMargin=1.0 * inch,
+        topMargin=0.85 * inch,
+        bottomMargin=0.85 * inch,
+    )
+
+    story = []
+
+    # Header
+    story.append(Paragraph(CONTACT["name"], _s(
+        "CLName", fontName="Helvetica-Bold", fontSize=14,
+        textColor=DARK, alignment=TA_LEFT, spaceAfter=8,
+    )))
+    contact_line = (
+        f'{CONTACT["location"]}  ·  {CONTACT["phone"]}  ·  {CONTACT["email"]}'
+        f'  ·  {CONTACT["linkedin"]}'
+    )
+    story.append(Paragraph(contact_line, _s(
+        "CLContact", fontName="Helvetica", fontSize=9,
+        textColor=LIGHT, alignment=TA_LEFT, spaceAfter=2,
+    )))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=ACCENT, spaceAfter=0))
+
+    # Date + recipient
+    story.append(Paragraph(date.today().strftime("%B %d, %Y"), _s(
+        "CLDate", fontName="Helvetica", fontSize=10,
+        textColor=MID, spaceBefore=16, spaceAfter=4,
+    )))
+    story.append(Paragraph(f"Hiring Team<br/>{company}", _s(
+        "CLRecipient", fontName="Helvetica", fontSize=10,
+        textColor=MID, spaceAfter=12,
+    )))
+
+    # Subject line
+    story.append(Paragraph(f"Re: <b>{role}</b>", _s(
+        "CLSubject", fontName="Helvetica-Bold", fontSize=10.5,
+        textColor=DARK, spaceAfter=14,
+    )))
+
+    # Body paragraphs
+    body_style = _s(
+        "CLBody", fontName="Helvetica", fontSize=10.5,
+        textColor=MID, leading=15, spaceAfter=10,
+    )
+    for para in [p.strip() for p in body.strip().split("\n\n") if p.strip()]:
+        story.append(Paragraph(para.replace("\n", " "), body_style))
+
+    # Closing
+    story.append(Paragraph("Sincerely,", _s(
+        "CLClosing", fontName="Helvetica", fontSize=10.5,
+        textColor=MID, spaceBefore=8, spaceAfter=2,
+    )))
+    story.append(Paragraph(CONTACT["name"], _s(
+        "CLSig", fontName="Helvetica-Bold", fontSize=10.5, textColor=DARK,
+    )))
+
+    doc.build(story)
+
+
+@mcp.tool()
+def generate_coverletter_pdf(
+    company: str,
+    role: str,
+    cover_letter_text: str,
+) -> str:
+    """
+    Generate a styled cover letter PDF.
+    Returns the absolute path to the PDF.
+
+    cover_letter_text — the full cover letter body (plain text, paragraphs
+    separated by double newlines). Do NOT include a salutation or closing —
+    those are added automatically.
+    """
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    today = date.today().isoformat()
+    safe_co = company.replace(" ", "_").replace("/", "-")
+    safe_role = role.replace(" ", "_").replace("/", "-")
+    filename = f"{safe_co}_{safe_role}_{today}_coverletter.pdf"
+    pdf_path = OUTPUT_DIR / filename
+
+    try:
+        _build_coverletter_pdf(str(pdf_path), company, role, cover_letter_text)
+    except Exception as e:
+        return json.dumps({"error": f"Cover letter PDF generation failed: {e}"})
+
+    return json.dumps({
+        "pdf_path": str(pdf_path),
+        "filename": filename,
+        "message": f"Cover letter PDF saved → {filename}",
     })
 
 

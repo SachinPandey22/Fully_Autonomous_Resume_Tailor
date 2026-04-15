@@ -10,7 +10,7 @@ mcp = FastMCP("outreach")
 
 SACHIN = {
     "name": "Sachin Pandey",
-    "email": "ihn10@txstate.edu",
+    "email": "pandeys2023@gmail.com",
     "linkedin": "linkedin.com/in/pandey-s/",
 }
 

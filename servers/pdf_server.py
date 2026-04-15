@@ -66,7 +66,7 @@ NAME_S = _s("Name", fontName="Helvetica-Bold", fontSize=17,
             textColor=DARK, alignment=TA_CENTER, spaceBefore=4, spaceAfter=8)
 CONTACT_S = _s("Contact", fontName="Helvetica", fontSize=8.5,
                textColor=LIGHT, alignment=TA_CENTER, spaceAfter=3)
-SECTION_S = _s("Section", fontName="Helvetica-Bold", fontSize=10,
+SECTION_S = _s("Section", fontName="Helvetica-Bold", fontSize=11,
                textColor=DARK, spaceBefore=6, spaceAfter=2)
 ENTRY_TITLE_S = _s("EntryTitle", fontName="Helvetica-Bold", fontSize=9.5,
                    textColor=DARK, spaceBefore=3, spaceAfter=1)
@@ -74,8 +74,9 @@ ENTRY_TITLE_R = _s("EntryTitleR", fontName="Helvetica", fontSize=9,
                    textColor=MID, alignment=TA_RIGHT)
 ENTRY_SUB_S = _s("EntrySub", fontName="Helvetica-Oblique", fontSize=8.5,
                  textColor=MID, spaceAfter=1)
-BULLET_S = _s("Bullet", fontName="Helvetica", fontSize=8.8,
-              textColor=MID, leftIndent=10, spaceAfter=0.5, leading=11)
+BULLET_S = _s("Bullet", fontName="Helvetica", fontSize=9,
+              textColor=MID, leftIndent=28, firstLineIndent=-12,
+              spaceAfter=0.5, leading=11)
 SKILL_S = _s("Skill", fontName="Helvetica", fontSize=8.8,
              textColor=MID, spaceAfter=1, leading=11)
 AFF_S = _s("Aff", fontName="Helvetica", fontSize=8.8,
@@ -162,7 +163,7 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
             f'<b>Stack:</b> {proj["stack"]}', ENTRY_SUB_S
         ))
         for bullet in proj.get("bullets", []):
-            story.append(Paragraph(f"\u2022 {bullet}", BULLET_S))
+            story.append(Paragraph(f'<font size="11">\u2022</font> {bullet}', BULLET_S))
 
     # ── Experience ────────────────────────────────────────────────────────────
     story.append(Paragraph("<u>EXPERIENCE</u>", SECTION_S))
@@ -175,7 +176,7 @@ def _build_pdf(path: str, skills: dict, projects: list, experience: list) -> Non
         ))
         story.append(Paragraph(exp["company"], ENTRY_SUB_S))
         for bullet in exp.get("bullets", []):
-            story.append(Paragraph(f"\u2022 {bullet}", BULLET_S))
+            story.append(Paragraph(f'<font size="11">\u2022</font> {bullet}', BULLET_S))
 
     # ── Affiliations ──────────────────────────────────────────────────────────
     story.append(Paragraph("<u>AFFILIATIONS</u>", SECTION_S))

@@ -1,7 +1,7 @@
 # Sachin Pandey
 
-ihn10@txstate.edu | +1-737-213-2760 | San Marcos, TX
-linkedin.com/in/pandey-s/ | github.com/[github]
+pandeys2023@gmail.com | +1-737-213-2760 | San Marcos, TX
+linkedin.com/in/pandey-s/ | github.com/sachinpandey22
 
 ## Education
 

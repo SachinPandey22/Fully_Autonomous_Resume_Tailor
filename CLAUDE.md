@@ -122,7 +122,7 @@ Call draft_outreach(
   company = company,
   role = title,
   my_background = "CS student at Texas State University,
-  4.0 GPA, graduating May 2027. Built full-stack apps with
+  3.96 GPA, graduating May 2027. Built full-stack apps with
   React, Node.js, Django, PostgreSQL. Built a RAG AI assistant
   using FastAPI and Qdrant. Research Assistant doing Python
   data analysis."

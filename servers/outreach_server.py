@@ -57,7 +57,7 @@ def draft_outreach(
     recruiter_name: first name (or full name) of the recruiter.
     company: target company name.
     role_applying: job title you are applying for.
-    my_background: 1-2 sentence summary (e.g. 'CS junior at Texas State, 4.0 GPA,
+    my_background: 1-2 sentence summary (e.g. 'CS junior at Texas State, 3.96 GPA,
                    built full-stack apps and a RAG AI assistant').
     company_reason: why this company specifically (optional — if omitted a placeholder
                     is left so you can fill it in Gmail before sending).

@@ -28,6 +28,50 @@ def _detect_platform(url: str) -> str:
     return "other"
 
 
+def _fetch_workday(url: str) -> dict:
+    """
+    Use Workday's undocumented public JSON API.
+    URL:  https://{tenant}.wd1.myworkdayjobs.com/{career_site}/job/{location}/{slug}
+    API:  GET /wday/cxs/{tenant}/{career_site}/job/{location}/{slug}
+    """
+    parsed = urlparse(url)
+    hostname = parsed.hostname or ""
+    tenant = hostname.split(".")[0]
+
+    # parsed.path: "/{career_site}/job/{location}/{slug}"
+    # API path:    "/wday/cxs/{tenant}/{career_site}/job/{location}/{slug}"
+    path_parts = [p for p in parsed.path.split("/") if p]
+    career_site = path_parts[0] if path_parts else "External"
+    job_path = "/".join(path_parts[1:])  # "job/{location}/{slug}"
+
+    api_url = f"https://{hostname}/wday/cxs/{tenant}/{career_site}/{job_path}"
+    response = requests.get(
+        api_url,
+        headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
+        timeout=15,
+    )
+    response.raise_for_status()
+    data = response.json()
+
+    info = data.get("jobPostingInfo", {})
+    title = info.get("title", "Unknown Title")
+    company = data.get("hiringOrganization", {}).get("name", tenant.capitalize())
+    desc_html = info.get("jobDescription", "") or info.get("jobRequisitionDescription", "")
+    description = BeautifulSoup(desc_html, "html.parser").get_text(separator="\n", strip=True)[:6000]
+
+    return {"company": company, "title": title, "description": description}
+
+
+def _fetch_via_jina(url: str) -> str:
+    response = requests.get(
+        f"https://r.jina.ai/{url}",
+        headers={"User-Agent": USER_AGENT},
+        timeout=20,
+    )
+    response.raise_for_status()
+    return response.text[:6000]
+
+
 def _extract_text(soup: BeautifulSoup, platform: str) -> str:
     # Remove noise tags
     for tag in soup(["script", "style", "nav", "footer", "header", "aside", "noscript"]):
@@ -85,6 +129,25 @@ def _extract_company(soup: BeautifulSoup, url: str) -> str:
 def fetch_job(url: str) -> dict:
     """Fetch a job description from a URL and extract structured data."""
     platform = _detect_platform(url)
+
+    # Workday blocks HTML scraping — use their JSON API directly
+    if platform == "workday":
+        try:
+            result = _fetch_workday(url)
+        except requests.exceptions.RequestException as e:
+            return {
+                "error": str(e),
+                "message": "Fetch failed. Please paste the job description text manually.",
+            }
+        return {
+            "company": result["company"],
+            "title": result["title"],
+            "description": result["description"],
+            "url": url,
+            "word_count": len(result["description"].split()),
+            "platform": platform,
+        }
+
     try:
         response = requests.get(
             url,
@@ -122,6 +185,13 @@ def fetch_job(url: str) -> dict:
 
     # Truncate
     description = description[:6000]
+
+    # Fallback for any other JS-heavy site that returned near-empty content
+    if len(description.strip()) < 200:
+        try:
+            description = _fetch_via_jina(url)
+        except requests.exceptions.RequestException:
+            pass
 
     return {
         "company": company,

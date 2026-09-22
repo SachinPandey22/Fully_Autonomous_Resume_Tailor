@@ -12,7 +12,7 @@ Relevant Courses: Software Engineering, DSA, Systems Fundamentals, Computer Arch
 
 ## Skills
 
-Programming Languages: Python, Java, JavaScript, C++
+Programming Languages: Python, Java, JavaScript, C++, Assembly
 Frontend: React, Recharts, HTML, CSS
 Backend: Node.js, Express, Django REST Framework, Flask, FastAPI
 Databases: PostgreSQL, MongoDB
@@ -67,6 +67,21 @@ Python • Model Context Protocol (MCP) • Google Cloud API
 - Developed a suite of automation tools allowing AI agents to search, read, draft, and send emails using OAuth 2.0 authentication.
 - Engineered a secure token management system with automatic refresh cycles and environment-based credential handling to ensure data privacy.
 - Streamlined AI-driven communication workflows by bridging the gap between local LLM environments and real-world messaging services via stdin/stdout communication protocols.
+
+### pdfedit — Open-Source PDF Text Editor (Solo Project)
+Python • PyMuPDF • pytest • Hatchling | pip install pdfedit
+- Built and published an open-source Python command-line tool to PyPI that edits text in existing PDFs while preserving the original font, size, and color
+- Designed a font-resolution engine that extracts embedded fonts from a PDF or falls back to the closest standard font based on style, with per-document caching to avoid redundant lookups
+- Identified and fixed rendering bugs (special-character encoding errors and text overlap during redaction) by rendering pages to PNG and diffing output
+- Wrote a 48-test pytest suite as the release gate and packaged the project with Hatchling under the MIT license
+
+### CreditPick — Voice-First Credit Card Recommendation App (HackRice 16)
+FastAPI • PostgreSQL • React Native (Expo) • TypeScript • Gemini API • ElevenLabs
+- Built a voice-first mobile app in a team of 4 at HackRice 16 that recommends which credit card to use for a purchase based on rewards value and credit-utilization impact
+- Set up the project architecture and FastAPI + SQLAlchemy backend, including data models, routers, and mock API contracts, enabling frontend and backend development to proceed in parallel
+- Built an end-to-end voice pipeline combining in-app audio recording, Gemini-based speech-to-text, and ElevenLabs text-to-speech playback via expo-audio, with an on-device speech fallback
+- Integrated the team's card-scoring engine into a /recommend API endpoint, adding a fallback demo dataset to keep recommendations functional throughout development
+- Coordinated branch merges and pull requests across 4 contributors and resolved integration and UI issues
 
 
 ## Affiliations

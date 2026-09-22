@@ -7,7 +7,7 @@ linkedin.com/in/pandey-s/ | github.com/sachinpandey22
 
 Texas State University — San Marcos, TX
 Bachelor of Science in Computer Science
-GPA: 3.96 / 4.0 | Graduating: May 2027
+GPA: 3.97 / 4.0 | Graduating: May 2027
 Relevant Courses: Software Engineering, DSA, Systems Fundamentals, Computer Architecture, OOP
 
 ## Skills

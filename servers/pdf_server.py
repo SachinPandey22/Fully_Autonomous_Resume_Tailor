@@ -39,7 +39,7 @@ EDUCATION = {
     "school": "Texas State University",
     "location": "San Marcos, TX",
     "degree": "Bachelor of Science in Computer Science",
-    "gpa": "3.96 / 4.0",
+    "gpa": "3.97 / 4.0",
     "graduation": "Expected Graduation: May 2027",
     "courses": (
         "Software Engineering, Data Structures & Algorithms, "
